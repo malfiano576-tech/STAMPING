@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#172b4d">
+<title>Stamping Management</title>
+<style>
+:root{--navy:#172b4d;--navy2:#213b63;--blue:#2874d0;--bg:#f2f5fa;--card:#fff;--text:#1d2939;--muted:#667085;--line:#e4e9f1;--green:#16845b;--orange:#bd710b;--red:#c03939;--shadow:0 5px 18px rgba(24,45,78,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.45 Arial,Helvetica,sans-serif;color:var(--text)}
+.app{min-height:100vh;display:flex}.sidebar{width:245px;background:var(--navy);color:#fff;padding:22px 14px;position:fixed;inset:0 auto 0 0;z-index:5;display:flex;flex-direction:column}
+.brand{padding:5px 12px 24px;border-bottom:1px solid #ffffff22}.brand b{font-size:20px;letter-spacing:1.5px}.brand small{display:block;color:#b8c8df;margin-top:5px}
+.nav{margin-top:18px;display:grid;gap:7px}.nav button{border:0;background:transparent;color:#d9e3f1;text-align:left;padding:12px;border-radius:9px;font-weight:600;cursor:pointer}.nav button:hover,.nav button.active{background:#ffffff1b;color:#fff}.nav button span{display:inline-block;width:27px}
+.sidefoot{margin-top:auto;color:#aebed4;font-size:11px;padding:12px}
+.main{margin-left:245px;width:calc(100% - 245px);padding:26px 30px 45px}.top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px}.top h1{font-size:24px;margin:0;color:var(--navy)}.top p{margin:5px 0 0;color:var(--muted)}.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+button,.btn{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;font-weight:700;font-size:13px}.primary{background:var(--blue);color:white}.secondary{background:#e9eff8;color:var(--navy)}.danger{background:#fff0f0;color:var(--red)}.success{background:#e8f6ef;color:var(--green)}
+.page{display:none}.page.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:17px;box-shadow:var(--shadow)}.stat label{color:var(--muted);font-weight:600}.stat strong{display:block;font-size:28px;margin-top:7px;color:var(--navy)}.stat small{color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:19px;margin-bottom:18px;box-shadow:var(--shadow)}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.panel h2{font-size:17px;margin:0;color:var(--navy)}.panel h3{font-size:14px;margin:0 0 12px;color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.field{min-width:0}.field.full{grid-column:1/-1}.field label{display:block;font-size:12px;font-weight:700;color:#475467;margin-bottom:6px}.field input,.field select,.field textarea,.search{width:100%;border:1px solid #d6deea;border-radius:8px;padding:10px 11px;background:#fff;color:var(--text);font:inherit;outline:none}.field input:focus,.field select:focus,.field textarea:focus,.search:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2874d018}.field textarea{min-height:72px;resize:vertical}.hint{font-size:11px;color:var(--muted);margin-top:4px}.form-actions{display:flex;gap:8px;margin-top:15px;flex-wrap:wrap}
+.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:13px}.search{max-width:310px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;min-width:760px;background:#fff}th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:12px}th{background:#f7f9fc;color:#475467;white-space:nowrap;font-size:11px;text-transform:uppercase;letter-spacing:.35px}tr:last-child td{border-bottom:0}.empty{text-align:center;color:var(--muted);padding:25px}.actions{white-space:nowrap}.actions button{padding:6px 9px;margin-right:4px;font-size:11px}.pill{display:inline-block;padding:4px 8px;border-radius:30px;font-size:11px;font-weight:700;background:#edf2f8;color:#475467}.pill.good{background:#e8f6ef;color:var(--green)}.pill.warn{background:#fff4df;color:var(--orange)}.pill.bad{background:#fff0f0;color:var(--red)}
+.calc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.calc div{background:#f5f8fc;padding:12px;border-radius:8px}.calc small{display:block;color:var(--muted)}.calc b{font-size:18px;color:var(--navy)}
+.photo-preview{display:block;max-width:220px;max-height:160px;object-fit:contain;margin-top:9px;border:1px solid var(--line);border-radius:9px;background:#f7f9fc;padding:4px}.thumb{width:54px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}.notice{padding:12px 14px;background:#eef5ff;border-left:3px solid var(--blue);border-radius:7px;color:#344967;font-size:12px;margin-bottom:15px}.hidden{display:none!important}
+.mobilebar{display:none}
+@media(max-width:950px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.main{padding:22px 18px}}
+@media(max-width:680px){.sidebar{display:none}.main{margin:0;width:100%;padding:17px 13px 90px}.top{align-items:flex-start}.top h1{font-size:20px}.top p{font-size:12px}.top-actions .btn{padding:8px 9px}.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:23px}.stat label{font-size:12px}.grid{grid-template-columns:1fr 1fr;gap:10px}.field.full{grid-column:1/-1}.panel{padding:14px;margin-bottom:13px}.panel-head{align-items:flex-start}.mobilebar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:10;padding:7px 3px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -4px 15px #172b4d12}.mobilebar button{background:transparent;color:#667085;padding:6px 1px;font-size:10px;border-radius:6px}.mobilebar button.active{background:#edf4ff;color:var(--blue)}.mobilebar span{display:block;font-size:17px;margin-bottom:2px}.calc{grid-template-columns:repeat(2,1fr)}.search{max-width:none;flex:1;min-width:150px}.toolbar{align-items:stretch}}
+@media(max-width:390px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><b>STAMPING</b><small>Management & Production Control</small></div>
+ <nav class="nav" id="sideNav">
+  <button class="active" data-page="dashboard"><span>▦</span> Dashboard</button>
+  <button data-page="cetakan"><span>▤</span> Data Cetakan</button>
+  <button data-page="foil"><span>▧</span> Data Foil</button>
+  <button data-page="penahan"><span>▣</span> Penahan Foil</button>
+  <button data-page="sheet"><span>▥</span> Master Sheet</button>
+  <button data-page="produksi"><span>▦</span> Produksi</button>
+  <button data-page="riwayat"><span>◷</span> Riwayat Produksi</button>
+ </nav>
+ <div class="sidefoot">STAM­PING MANAGEMENT<br>Data tersimpan pada perangkat ini</div>
+</aside>
+<main class="main">
+ <header class="top"><div><h1 id="pageTitle">Dashboard Stamping</h1><p id="pageDesc">Ringkasan cetakan, foil, penahan, sheet, dan produksi</p></div><div class="top-actions"><button class="secondary" onclick="exportBackup()">Backup Data</button><button class="secondary" onclick="document.getElementById('restoreFile').click()">Import Data</button><input id="restoreFile" type="file" accept=".json" class="hidden"></div></header>
+
+ <section class="page active" id="page-dashboard">
+  <div class="stats">
+   <div class="stat"><label>Total Cetakan</label><strong id="statCetakan">0</strong><small>Data cetakan tersimpan</small></div>
+   <div class="stat"><label>Total Data Foil</label><strong id="statFoil">0</strong><small>Jenis / ukuran foil</small></div>
+   <div class="stat"><label>Stok Penahan</label><strong id="statPenahan">0</strong><small>Total unit tersedia</small></div>
+   <div class="stat"><label>Master Sheet</label><strong id="statSheet">0</strong><small>Jenis sheet terdaftar</small></div>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Ringkasan Produksi</h2><button class="primary" onclick="navigate('produksi')">+ Input Produksi</button></div>
+   <div class="stats" style="margin:0">
+    <div class="stat"><label>Total Target</label><strong id="statTarget">0</strong></div>
+    <div class="stat"><label>Total Hasil</label><strong id="statHasil">0</strong></div>
+    <div class="stat"><label>Total Reject</label><strong id="statReject">0</strong></div>
+    <div class="stat"><label>Sisa Order</label><strong id="statSisa">0</strong></div>
+   </div>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Produksi Terakhir</h2><button class="secondary" onclick="navigate('riwayat')">Lihat Riwayat</button></div><div id="recentTable"></div></div>
+  <div class="panel"><div class="panel-head"><h2>Rekap Semua Data Berdasarkan Sheet</h2><span class="pill">Otomatis per Sheet</span></div>
+   <div class="notice">Semua cetakan, foil, penahan foil, dan produksi dirangkum berdasarkan nama sheet. Pastikan penulisan nama sheet sama agar data masuk ke kelompok yang sama.</div>
+   <div class="toolbar"><input class="search" id="searchRekapSheet" placeholder="Cari nama sheet..."><button class="secondary" onclick="exportCSV('rekapSheet')">Export Rekap CSV</button></div>
+   <div id="tableRekapSheet"></div>
+  </div>
+  <div class="notice">Catatan: data disimpan di browser/perangkat yang digunakan (localStorage). Gunakan Backup Data secara berkala agar data tidak hilang saat browser dibersihkan atau perangkat berganti.</div>
+ </section>
+
+ <section class="page" id="page-cetakan">
+  <div class="panel"><div class="panel-head"><h2 id="cetakanFormTitle">Tambah Data Cetakan</h2><span class="pill">Master Cetakan</span></div>
+   <form id="cetakanForm"><input type="hidden" id="cetakanId"><div class="grid">
+    <div class="field"><label>Kode Cetakan *</label><input id="cKode" required placeholder="Contoh: CTK-001"></div>
+    <div class="field"><label>Nama Cetakan *</label><input id="cNama" required placeholder="Nama / kode produk"></div>
+    <div class="field"><label>Macam / Jenis Cetakan *</label><input id="cJenis" required placeholder="Contoh: 1 warna, 2 warna"></div>
+    <div class="field"><label>Untuk Sheet *</label><input id="cSheet" list="sheetOptionsCetakan" required placeholder="Pilih / ketik nama sheet"><datalist id="sheetOptionsCetakan"></datalist></div>
+    <div class="field"><label>Jumlah Cetakan</label><input id="cJumlah" type="number" min="0" value="1"></div>
+    <div class="field"><label>Bahan Cetakan</label><input id="cBahan" placeholder="Contoh: aluminium / baja"></div>
+    <div class="field"><label>Panjang (mm)</label><input id="cP" type="number" min="0" step="any"></div>
+    <div class="field"><label>Lebar (mm)</label><input id="cL" type="number" min="0" step="any"></div>
+    <div class="field"><label>Tinggi / Tebal (mm)</label><input id="cT" type="number" min="0" step="any"></div>
+    <div class="field"><label>Kondisi Setelah Digunakan</label><select id="cKondisi"><option>Baik</option><option>Perlu Perbaikan</option><option>Rusak</option></select></div>
+    <div class="field"><label>Lokasi Penyimpanan</label><input id="cLokasi" placeholder="Rak / lemari / lokasi"></div>
+    <div class="field"><label>Tanggal Pemeriksaan</label><input id="cTanggal" type="date"></div>
+    <div class="field full"><label>Foto Cetakan</label><input id="cFoto" type="file" accept="image/*" capture="environment"><div class="hint">Pilih foto dari galeri atau ambil langsung dari kamera.</div><img id="cFotoPreview" class="photo-preview hidden" alt="Preview foto cetakan"></div>
+    <div class="field full"><label>Keterangan</label><textarea id="cKet" placeholder="Catatan kondisi, kerusakan, atau riwayat pemakaian"></textarea></div>
+   </div><div class="form-actions"><button class="primary" type="submit">Simpan Cetakan</button><button class="secondary" type="button" onclick="resetForm('cetakanForm')">Bersihkan</button></div></form>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Daftar Cetakan</h2><span class="pill" id="countCetakan">0 data</span></div><div class="toolbar"><input class="search" id="searchCetakan" placeholder="Cari kode, nama, sheet, bahan..."><button class="secondary" onclick="exportCSV('cetakan')">Export CSV</button></div><div id="tableCetakan"></div></div>
+ </section>
+
+ <section class="page" id="page-foil">
+  <div class="panel"><div class="panel-head"><h2 id="foilFormTitle">Tambah Data Foil</h2><span class="pill">Spesifikasi Foil</span></div>
+   <form id="foilForm"><input type="hidden" id="foilId"><div class="grid">
+    <div class="field"><label>Kode / Nama Foil *</label><input id="fNama" required placeholder="Kode atau nama foil"></div>
+    <div class="field"><label>Untuk Sheet *</label><input id="fSheet" list="sheetOptionsFoil" required placeholder="Pilih / ketik nama sheet"><datalist id="sheetOptionsFoil"></datalist></div>
+    <div class="field"><label>Ukuran Foil</label><input id="fUkuran" placeholder="P x L atau ukuran khusus"></div>
+    <div class="field"><label>Jumlah Foil dalam 1 Sheet</label><input id="fJumlah" type="number" min="0" value="0"></div>
+    <div class="field"><label>Diameter Foil (mm)</label><input id="fDiameter" type="number" min="0" step="any"></div>
+    <div class="field"><label>Jarak Antar Foil (mm)</label><input id="fJarak" type="number" min="0" step="any"></div>
+    <div class="field"><label>Jumlah Step / Tahapan Foil</label><input id="fStep" type="number" min="0" value="0"></div>
+    <div class="field"><label>Interval Penggantian</label><input id="fInterval" placeholder="Contoh: 3 bulan / 50.000 sheet"></div>
+    <div class="field"><label>Tanggal Pemeriksaan</label><input id="fTanggal" type="date"></div>
+    <div class="field full"><label>Foto Foil</label><input id="fFoto" type="file" accept="image/*" capture="environment"><div class="hint">Pilih foto dari galeri atau ambil langsung dari kamera.</div><img id="fFotoPreview" class="photo-preview hidden" alt="Preview foto foil"></div>
+    <div class="field full"><label>Keterangan</label><textarea id="fKet" placeholder="Catatan spesifikasi atau pemakaian"></textarea></div>
+   </div><div class="form-actions"><button class="primary" type="submit">Simpan Foil</button><button class="secondary" type="button" onclick="resetForm('foilForm')">Bersihkan</button></div></form>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Daftar Foil</h2><span class="pill" id="countFoil">0 data</span></div><div class="toolbar"><input class="search" id="searchFoil" placeholder="Cari foil atau sheet..."><button class="secondary" onclick="exportCSV('foil')">Export CSV</button></div><div id="tableFoil"></div></div>
+ </section>
+
+ <section class="page" id="page-penahan">
+  <div class="panel"><div class="panel-head"><h2 id="penahanFormTitle">Tambah Data Penahan Foil</h2><span class="pill">Stok Penahan</span></div>
+   <form id="penahanForm"><input type="hidden" id="penahanId"><div class="grid">
+    <div class="field"><label>Kode / Nama Penahan *</label><input id="pNama" required placeholder="Kode atau nama penahan"></div>
+    <div class="field"><label>Untuk Sheet *</label><input id="pSheet" list="sheetOptionsPenahan" required placeholder="Pilih / ketik nama sheet"><datalist id="sheetOptionsPenahan"></datalist></div>
+    <div class="field"><label>Ukuran / Dimensi</label><input id="pUkuran" placeholder="P x L x T (mm)"></div>
+    <div class="field"><label>Stok Tersedia *</label><input id="pStok" type="number" min="0" required value="0"></div>
+    <div class="field"><label>Kondisi</label><select id="pKondisi"><option>Baik</option><option>Perlu Perbaikan</option><option>Rusak</option></select></div>
+    <div class="field"><label>Lokasi Penyimpanan</label><input id="pLokasi" placeholder="Rak / lemari"></div>
+    <div class="field full"><label>Foto Penahan Foil</label><input id="pFoto" type="file" accept="image/*" capture="environment"><div class="hint">Pilih foto dari galeri atau ambil langsung dari kamera.</div><img id="pFotoPreview" class="photo-preview hidden" alt="Preview foto penahan"></div>
+    <div class="field full"><label>Keterangan</label><textarea id="pKet"></textarea></div>
+   </div><div class="form-actions"><button class="primary" type="submit">Simpan Penahan</button><button class="secondary" type="button" onclick="resetForm('penahanForm')">Bersihkan</button></div></form>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Daftar Penahan Foil</h2><span class="pill" id="countPenahan">0 data</span></div><div class="toolbar"><input class="search" id="searchPenahan" placeholder="Cari nama, sheet, lokasi..."><button class="secondary" onclick="exportCSV('penahan')">Export CSV</button></div><div id="tablePenahan"></div></div>
+ </section>
+
+ <section class="page" id="page-sheet">
+  <div class="panel"><div class="panel-head"><h2 id="sheetFormTitle">Tambah Master Sheet</h2><span class="pill">Master Data</span></div>
+   <form id="sheetForm"><input type="hidden" id="sheetId"><div class="grid">
+    <div class="field"><label>Nama Sheet *</label><input id="sNama" required placeholder="Nama sheet"></div>
+    <div class="field"><label>Kode Sheet</label><input id="sKode" placeholder="Kode sheet"></div>
+    <div class="field"><label>Ukuran Sheet</label><input id="sUkuran" placeholder="Panjang x lebar (mm)"></div>
+    <div class="field"><label>Bahan Sheet</label><input id="sBahan" placeholder="Jenis material"></div>
+    <div class="field"><label>Gramasi / Ketebalan</label><input id="sGramasi" placeholder="Contoh: 250 gsm"></div>
+    <div class="field"><label>Status</label><select id="sStatus"><option>Aktif</option><option>Tidak Aktif</option></select></div>
+    <div class="field full"><label>Foto Sheet / Contoh Material</label><input id="sFoto" type="file" accept="image/*" capture="environment"><div class="hint">Pilih foto dari galeri atau ambil langsung dari kamera.</div><img id="sFotoPreview" class="photo-preview hidden" alt="Preview foto sheet"></div>
+    <div class="field full"><label>Keterangan</label><textarea id="sKet"></textarea></div>
+   </div><div class="form-actions"><button class="primary" type="submit">Simpan Sheet</button><button class="secondary" type="button" onclick="resetForm('sheetForm')">Bersihkan</button></div></form>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Daftar Master Sheet</h2><span class="pill" id="countSheet">0 data</span></div><div class="toolbar"><input class="search" id="searchSheet" placeholder="Cari nama atau kode sheet..."><button class="secondary" onclick="exportCSV('sheet')">Export CSV</button></div><div id="tableSheet"></div></div>
+ </section>
+
+ <section class="page" id="page-produksi">
+  <div class="panel"><div class="panel-head"><h2 id="produksiFormTitle">Input Produksi Sheet</h2><span class="pill">Produksi per Shift</span></div>
+   <div class="notice">Masukkan hasil produksi pada masing-masing shift. Total hasil dan sisa order dihitung otomatis. Sisa order = target order dikurangi total hasil produksi.</div>
+   <form id="produksiForm"><input type="hidden" id="produksiId"><div class="grid">
+    <div class="field"><label>Tanggal Produksi *</label><input id="prTanggal" type="date" required></div>
+    <div class="field"><label>Nama Sheet *</label><input id="prSheet" list="sheetOptions" required placeholder="Pilih / ketik nama sheet"><datalist id="sheetOptions"></datalist></div>
+    <div class="field"><label>Nomor PO / Order</label><input id="prOrder" placeholder="Nomor order"></div>
+    <div class="field"><label>Jumlah Order / Target *</label><input id="prTarget" type="number" min="0" required value="0"></div>
+    <div class="field"><label>Hasil Shift 1</label><input id="prShift1" type="number" min="0" value="0"></div>
+    <div class="field"><label>Hasil Shift 2</label><input id="prShift2" type="number" min="0" value="0"></div>
+    <div class="field"><label>Hasil Shift 3</label><input id="prShift3" type="number" min="0" value="0"></div>
+    <div class="field"><label>Jumlah Reject</label><input id="prReject" type="number" min="0" value="0"></div>
+    <div class="field"><label>Pemeriksaan Kesesuaian</label><select id="prCocok"><option value="Sesuai">Sesuai</option><option value="Belum Sesuai">Belum Sesuai</option><option value="Perlu Pemeriksaan">Perlu Pemeriksaan</option></select></div>
+    <div class="field full"><label>Foto Produksi / Kondisi Sheet</label><input id="prFoto" type="file" accept="image/*" capture="environment"><div class="hint">Pilih foto dari galeri atau ambil langsung dari kamera.</div><img id="prFotoPreview" class="photo-preview hidden" alt="Preview foto produksi"></div>
+    <div class="field full"><label>Keterangan</label><textarea id="prKet" placeholder="Catatan hasil produksi, kendala, atau selisih"></textarea></div>
+   </div>
+   <div class="calc">
+    <div><small>Total Hasil</small><b id="calcHasil">0</b></div><div><small>Total Reject</small><b id="calcReject">0</b></div><div><small>Hasil Bersih</small><b id="calcBersih">0</b></div><div><small>Sisa Order</small><b id="calcSisa">0</b></div>
+   </div>
+   <div class="form-actions"><button class="primary" type="submit">Simpan Produksi</button><button class="secondary" type="button" onclick="resetForm('produksiForm')">Bersihkan</button></div></form>
+  </div>
+ </section>
+
+ <section class="page" id="page-riwayat">
+  <div class="panel"><div class="panel-head"><h2>Riwayat Produksi</h2><span class="pill" id="countProduksi">0 data</span></div>
+   <div class="toolbar"><input class="search" id="searchProduksi" placeholder="Cari sheet, order, tanggal..."><input class="search" id="filterBulan" type="month" style="max-width:190px"><button class="secondary" onclick="exportCSV('produksi')">Export CSV</button></div>
+   <div id="tableProduksi"></div>
+  </div>
+ </section>
+ <footer style="color:#98a2b3;font-size:11px;text-align:center;padding:12px">STAMPING MANAGEMENT SYSTEM · Versi lokal HTML</footer>
+</main>
+</div>
+<nav class="mobilebar" id="mobileNav">
+ <button class="active" data-page="dashboard"><span>▦</span>Home</button><button data-page="cetakan"><span>▤</span>Cetakan</button><button data-page="foil"><span>▧</span>Foil</button><button data-page="penahan"><span>▣</span>Penahan</button><button data-page="produksi"><span>▥</span>Produksi</button>
+</nav>
+<script>
+const KEY='stamping_management_android_v3';
+const blank={cetakan:[],foil:[],penahan:[],sheet:[],produksi:[]};
+let db=loadDB();
+function loadDB(){try{return {...blank,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){return structuredClone(blank)}}
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+const $=id=>document.getElementById(id);
+const val=id=>$(id).value.trim();
+const num=id=>Number($(id).value)||0;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>(Number(n)||0).toLocaleString('id-ID');
+const today=()=>new Date().toISOString().slice(0,10);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const defs={
+ dashboard:['Dashboard Stamping','Ringkasan seluruh data dan aktivitas'],
+ cetakan:['Data Cetakan','Jenis, spesifikasi, kondisi, dan lokasi penyimpanan cetakan'],
+ foil:['Data Foil','Ukuran, jumlah foil per sheet, jarak, dan interval penggantian'],
+ penahan:['Penahan Foil','Dimensi, kondisi, dan jumlah stok penahan foil'],
+ sheet:['Master Sheet','Daftar sheet dan spesifikasi material'],
+ produksi:['Input Produksi','Pencatatan target dan hasil produksi per shift'],
+ riwayat:['Riwayat Produksi','Pencarian dan pemeriksaan catatan produksi']
+};
+function navigate(page){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+page).classList.add('active');document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('pageTitle').textContent=defs[page][0];$('pageDesc').textContent=defs[page][1];window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.page)));
+function resetForm(id){$(id).reset();let photoMap={cetakan:['cFoto','cFotoPreview'],foil:['fFoto','fFotoPreview'],penahan:['pFoto','pFotoPreview'],sheet:['sFoto','sFotoPreview'],produksi:['prFoto','prFotoPreview']};let key=id.replace('Form','');if(photoMap[key]){delete photoData[photoMap[key][0]];showPhoto(photoMap[key][1],'')}const hidden=$(id).querySelector('input[type=hidden]');if(hidden)hidden.value='';const title=$(id+'Title');if(title){const names={cetakan:'Tambah Data Cetakan',foil:'Tambah Data Foil',penahan:'Tambah Data Penahan Foil',sheet:'Tambah Master Sheet',produksi:'Input Produksi Sheet'};title.textContent=names[id.replace('Form','')]}if(id==='produksiForm'){$('prTanggal').value=today();calcProduction()}}
+function pillCondition(x){let c=x==='Baik'||x==='Aktif'||x==='Sesuai'?'good':x==='Rusak'||x==='Tidak Aktif'||x==='Belum Sesuai'?'bad':'warn';return `<span class="pill ${c}">${esc(x||'-')}</span>`}
+function table(headers,rows){if(!rows.length)return '<div class="empty">Belum ada data yang tersimpan.</div>';return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`}
+function actionButtons(type,id){return `<td class="actions"><button class="secondary" onclick="editItem('${type}','${id}')">Edit</button><button class="danger" onclick="deleteItem('${type}','${id}')">Hapus</button></td>`}
+function renderCetakan(){let q=val('searchCetakan').toLowerCase();let a=db.cetakan.filter(x=>JSON.stringify(x).toLowerCase().includes(q));$('countCetakan').textContent=a.length+' data';$('tableCetakan').innerHTML=table(['Foto','Kode','Nama / Jenis','Untuk Sheet','Jumlah','Bahan','Dimensi P x L x T (mm)','Kondisi','Lokasi','Pemeriksaan','Aksi'],a.map(x=>`<tr><td>${x.foto?`<img class="thumb" src="${x.foto}" alt="Foto">`:'-'}</td><td>${esc(x.kode)}</td><td><b>${esc(x.nama)}</b><br>${esc(x.jenis)}</td><td>${esc(x.sheet)}</td><td>${fmt(x.jumlah)}</td><td>${esc(x.bahan||'-')}</td><td>${[x.p,x.l,x.t].map(v=>v||'-').join(' × ')}</td><td>${pillCondition(x.kondisi)}</td><td>${esc(x.lokasi||'-')}</td><td>${esc(x.tanggal||'-')}</td>${actionButtons('cetakan',x.id)}</tr>`))}
+function renderFoil(){let q=val('searchFoil').toLowerCase();let a=db.foil.filter(x=>JSON.stringify(x).toLowerCase().includes(q));$('countFoil').textContent=a.length+' data';$('tableFoil').innerHTML=table(['Foto','Kode / Nama','Untuk Sheet','Ukuran','Jumlah / Sheet','Diameter (mm)','Jarak (mm)','Jumlah Step','Interval Ganti','Pemeriksaan','Aksi'],a.map(x=>`<tr><td>${x.foto?`<img class="thumb" src="${x.foto}" alt="Foto">`:'-'}</td><td><b>${esc(x.nama)}</b></td><td>${esc(x.sheet)}</td><td>${esc(x.ukuran||'-')}</td><td>${fmt(x.jumlah)}</td><td>${x.diameter||'-'}</td><td>${x.jarak||'-'}</td><td>${fmt(x.step)}</td><td>${esc(x.interval||'-')}</td><td>${esc(x.tanggal||'-')}</td>${actionButtons('foil',x.id)}</tr>`))}
+function renderPenahan(){let q=val('searchPenahan').toLowerCase();let a=db.penahan.filter(x=>JSON.stringify(x).toLowerCase().includes(q));$('countPenahan').textContent=a.length+' data';$('tablePenahan').innerHTML=table(['Foto','Kode / Nama','Untuk Sheet','Ukuran / Dimensi','Stok','Kondisi','Lokasi','Keterangan','Aksi'],a.map(x=>`<tr><td>${x.foto?`<img class="thumb" src="${x.foto}" alt="Foto">`:'-'}</td><td><b>${esc(x.nama)}</b></td><td>${esc(x.sheet)}</td><td>${esc(x.ukuran||'-')}</td><td><b>${fmt(x.stok)}</b></td><td>${pillCondition(x.kondisi)}</td><td>${esc(x.lokasi||'-')}</td><td>${esc(x.ket||'-')}</td>${actionButtons('penahan',x.id)}</tr>`))}
+function renderSheet(){let q=val('searchSheet').toLowerCase();let a=db.sheet.filter(x=>JSON.stringify(x).toLowerCase().includes(q));$('countSheet').textContent=a.length+' data';$('tableSheet').innerHTML=table(['Foto','Nama Sheet','Kode','Ukuran','Bahan','Gramasi / Tebal','Status','Keterangan','Aksi'],a.map(x=>`<tr><td>${x.foto?`<img class="thumb" src="${x.foto}" alt="Foto">`:'-'}</td><td><b>${esc(x.nama)}</b></td><td>${esc(x.kode||'-')}</td><td>${esc(x.ukuran||'-')}</td><td>${esc(x.bahan||'-')}</td><td>${esc(x.gramasi||'-')}</td><td>${pillCondition(x.status)}</td><td>${esc(x.ket||'-')}</td>${actionButtons('sheet',x.id)}</tr>`));let opts=db.sheet.map(x=>`<option value="${esc(x.nama)}">`).join('');['sheetOptions','sheetOptionsCetakan','sheetOptionsFoil','sheetOptionsPenahan'].forEach(id=>$(id).innerHTML=opts)}
+function getSheetSummary(){let names=new Set();db.sheet.forEach(x=>{if(x.nama)names.add(x.nama.trim())});['cetakan','foil','penahan','produksi'].forEach(type=>db[type].forEach(x=>{if(x.sheet)names.add(x.sheet.trim())}));return [...names].filter(Boolean).sort((a,b)=>a.localeCompare(b,'id')).map(name=>{let same=x=>(x.sheet||'').trim().toLowerCase()===name.toLowerCase();let c=db.cetakan.filter(same),f=db.foil.filter(same),p=db.penahan.filter(same),r=db.produksi.filter(same);let target=0,hasil=0,reject=0,sisa=0;r.forEach(x=>{let v=productionValues(x);target+=+x.target||0;hasil+=v.total;reject+=v.reject;sisa+=v.sisa});return {name,cetakan:c.length,foil:f.length,penahan:p.length,stok:p.reduce((s,x)=>s+(+x.stok||0),0),produksi:r.length,target,hasil,reject,sisa}})}
+function renderSheetSummary(){let q=val('searchRekapSheet').toLowerCase();let a=getSheetSummary().filter(x=>x.name.toLowerCase().includes(q));$('tableRekapSheet').innerHTML=table(['Nama Sheet','Data Cetakan','Data Foil','Data Penahan','Stok Penahan','Catatan Produksi','Target Order','Total Hasil','Reject','Sisa Order'],a.map(x=>`<tr><td><b>${esc(x.name)}</b></td><td>${fmt(x.cetakan)}</td><td>${fmt(x.foil)}</td><td>${fmt(x.penahan)}</td><td><b>${fmt(x.stok)}</b></td><td>${fmt(x.produksi)}</td><td>${fmt(x.target)}</td><td>${fmt(x.hasil)}</td><td>${fmt(x.reject)}</td><td>${fmt(x.sisa)}</td></tr>`))}
+function productionValues(x){let total=(+x.shift1||0)+(+x.shift2||0)+(+x.shift3||0),reject=+x.reject||0;return {total,reject,bersih:total-reject,sisa:(+x.target||0)-total}}
+function renderProduksi(){let q=val('searchProduksi').toLowerCase(),m=val('filterBulan');let a=db.produksi.filter(x=>(!m||x.tanggal?.startsWith(m))&&JSON.stringify(x).toLowerCase().includes(q)).sort((a,b)=>(b.tanggal||'').localeCompare(a.tanggal||''));$('countProduksi').textContent=a.length+' data';$('tableProduksi').innerHTML=table(['Tanggal','Sheet','PO / Order','Target','Shift 1','Shift 2','Shift 3','Total Hasil','Reject','Hasil Bersih','Sisa Order','Kesesuaian','Aksi'],a.map(x=>{let v=productionValues(x);return `<tr><td>${esc(x.tanggal)}</td><td><b>${esc(x.sheet)}</b></td><td>${esc(x.order||'-')}</td><td>${fmt(x.target)}</td><td>${fmt(x.shift1)}</td><td>${fmt(x.shift2)}</td><td>${fmt(x.shift3)}</td><td><b>${fmt(v.total)}</b></td><td>${fmt(v.reject)}</td><td>${fmt(v.bersih)}</td><td>${fmt(v.sisa)}</td><td>${pillCondition(x.cocok)}${x.ket?`<br><small>${esc(x.ket)}</small>`:''}</td>${actionButtons('produksi',x.id)}</tr>`}))}
+function renderDashboard(){ $('statCetakan').textContent=fmt(db.cetakan.length);$('statFoil').textContent=fmt(db.foil.length);$('statPenahan').textContent=fmt(db.penahan.reduce((s,x)=>s+(+x.stok||0),0));$('statSheet').textContent=fmt(db.sheet.length);let target=0,hasil=0,reject=0,sisa=0;db.produksi.forEach(x=>{let v=productionValues(x);target+=+x.target||0;hasil+=v.total;reject+=v.reject;sisa+=v.sisa});$('statTarget').textContent=fmt(target);$('statHasil').textContent=fmt(hasil);$('statReject').textContent=fmt(reject);$('statSisa').textContent=fmt(sisa);let a=[...db.produksi].sort((a,b)=>(b.tanggal||'').localeCompare(a.tanggal||'')).slice(0,5);$('recentTable').innerHTML=table(['Tanggal','Sheet','Target','Total Hasil','Reject','Sisa'],a.map(x=>{let v=productionValues(x);return `<tr><td>${esc(x.tanggal)}</td><td>${esc(x.sheet)}</td><td>${fmt(x.target)}</td><td>${fmt(v.total)}</td><td>${fmt(v.reject)}</td><td>${fmt(v.sisa)}</td></tr>`}))}
+function renderAll(){renderCetakan();renderFoil();renderPenahan();renderSheet();renderProduksi();renderDashboard();renderSheetSummary()}
+function readFields(ids){return Object.fromEntries(ids.map(id=>[id.slice(1).toLowerCase(),val(id)]))}
+const photoData={};
+function setupPhotoInput(inputId,previewId){
+ $(inputId).addEventListener('change',e=>{
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){alert('File harus berupa gambar.');e.target.value='';return}
+  if(file.size>8*1024*1024){alert('Ukuran foto maksimal 8 MB.');e.target.value='';return}
+  const reader=new FileReader();reader.onload=()=>{photoData[inputId]=reader.result;$(previewId).src=reader.result;$(previewId).classList.remove('hidden')};reader.readAsDataURL(file);
+ });
+}
+[['cFoto','cFotoPreview'],['fFoto','fFotoPreview'],['pFoto','pFotoPreview'],['sFoto','sFotoPreview'],['prFoto','prFotoPreview']].forEach(x=>setupPhotoInput(...x));
+function showPhoto(previewId,data){if(data){$(previewId).src=data;$(previewId).classList.remove('hidden')}else{$(previewId).removeAttribute('src');$(previewId).classList.add('hidden')}}
+function submitMaster(formId,type,fields){$(formId).addEventListener('submit',e=>{e.preventDefault();let id=$(type+'Id').value;let obj={id:id||uid()};fields.forEach(([field,input,kind])=>obj[field]=kind==='number'?num(input):kind==='photo'?(photoData[input]||db[type].find(z=>z.id===obj.id)?.[field]||''):val(input));let idx=db[type].findIndex(x=>x.id===obj.id);if(idx>=0)db[type][idx]=obj;else db[type].push(obj);saveDB();resetForm(formId);alert('Data berhasil disimpan.');})}
+submitMaster('cetakanForm','cetakan',[['kode','cKode'],['nama','cNama'],['jenis','cJenis'],['sheet','cSheet'],['jumlah','cJumlah','number'],['bahan','cBahan'],['p','cP','number'],['l','cL','number'],['t','cT','number'],['kondisi','cKondisi'],['lokasi','cLokasi'],['tanggal','cTanggal'],['ket','cKet'],['foto','cFoto','photo']]);
+submitMaster('foilForm','foil',[['nama','fNama'],['sheet','fSheet'],['ukuran','fUkuran'],['jumlah','fJumlah','number'],['diameter','fDiameter','number'],['jarak','fJarak','number'],['step','fStep','number'],['interval','fInterval'],['tanggal','fTanggal'],['ket','fKet'],['foto','fFoto','photo']]);
+submitMaster('penahanForm','penahan',[['nama','pNama'],['sheet','pSheet'],['ukuran','pUkuran'],['stok','pStok','number'],['kondisi','pKondisi'],['lokasi','pLokasi'],['ket','pKet'],['foto','pFoto','photo']]);
+submitMaster('sheetForm','sheet',[['nama','sNama'],['kode','sKode'],['ukuran','sUkuran'],['bahan','sBahan'],['gramasi','sGramasi'],['status','sStatus'],['ket','sKet'],['foto','sFoto','photo']]);
+function calcProduction(){let total=num('prShift1')+num('prShift2')+num('prShift3'),reject=num('prReject'),sisa=num('prTarget')-total;$('calcHasil').textContent=fmt(total);$('calcReject').textContent=fmt(reject);$('calcBersih').textContent=fmt(total-reject);$('calcSisa').textContent=fmt(sisa);$('calcSisa').style.color=sisa<0?'#c03939':'#172b4d'}
+['prTarget','prShift1','prShift2','prShift3','prReject'].forEach(id=>$(id).addEventListener('input',calcProduction));
+$('produksiForm').addEventListener('submit',e=>{e.preventDefault();let id=$('produksiId').value;let x={id:id||uid(),tanggal:val('prTanggal'),sheet:val('prSheet'),order:val('prOrder'),target:num('prTarget'),shift1:num('prShift1'),shift2:num('prShift2'),shift3:num('prShift3'),reject:num('prReject'),cocok:val('prCocok'),ket:val('prKet'),foto:photoData.prFoto||db.produksi.find(z=>z.id===id)?.foto||''};let idx=db.produksi.findIndex(z=>z.id===x.id);if(idx>=0)db.produksi[idx]=x;else db.produksi.push(x);saveDB();resetForm('produksiForm');alert('Data produksi berhasil disimpan.')});
+function editItem(type,id){let x=db[type].find(z=>z.id===id);if(!x)return;let map={cetakan:{kode:'cKode',nama:'cNama',jenis:'cJenis',sheet:'cSheet',jumlah:'cJumlah',bahan:'cBahan',p:'cP',l:'cL',t:'cT',kondisi:'cKondisi',lokasi:'cLokasi',tanggal:'cTanggal',ket:'cKet',foto:'cFoto'},foil:{nama:'fNama',sheet:'fSheet',ukuran:'fUkuran',jumlah:'fJumlah',diameter:'fDiameter',jarak:'fJarak',step:'fStep',interval:'fInterval',tanggal:'fTanggal',ket:'fKet',foto:'fFoto'},penahan:{nama:'pNama',sheet:'pSheet',ukuran:'pUkuran',stok:'pStok',kondisi:'pKondisi',lokasi:'pLokasi',ket:'pKet',foto:'pFoto'},sheet:{nama:'sNama',kode:'sKode',ukuran:'sUkuran',bahan:'sBahan',gramasi:'sGramasi',status:'sStatus',ket:'sKet',foto:'sFoto'},produksi:{tanggal:'prTanggal',sheet:'prSheet',order:'prOrder',target:'prTarget',shift1:'prShift1',shift2:'prShift2',shift3:'prShift3',reject:'prReject',cocok:'prCocok',ket:'prKet',foto:'prFoto'}};Object.entries(map[type]).forEach(([k,id])=>{if(k!=='foto')$(id).value=x[k]??''});if(x.foto){let preview={cetakan:'cFotoPreview',foil:'fFotoPreview',penahan:'pFotoPreview',sheet:'sFotoPreview',produksi:'prFotoPreview'}[type];showPhoto(preview,x.foto);photoData[{cetakan:'cFoto',foil:'fFoto',penahan:'pFoto',sheet:'sFoto',produksi:'prFoto'}[type]]=x.foto}else{let preview={cetakan:'cFotoPreview',foil:'fFotoPreview',penahan:'pFotoPreview',sheet:'sFotoPreview',produksi:'prFotoPreview'}[type];showPhoto(preview,'');photoData[{cetakan:'cFoto',foil:'fFoto',penahan:'pFoto',sheet:'sFoto',produksi:'prFoto'}[type]]=''}$(type+'Id').value=x.id;let titles={cetakan:'Edit Data Cetakan',foil:'Edit Data Foil',penahan:'Edit Data Penahan Foil',sheet:'Edit Master Sheet',produksi:'Edit Data Produksi'};$(type+'FormTitle').textContent=titles[type];navigate(type==='produksi'?'produksi':type);if(type==='produksi')calcProduction()}
+function deleteItem(type,id){if(!confirm('Hapus data ini? Data yang dihapus tidak dapat dikembalikan kecuali ada backup.'))return;db[type]=db[type].filter(x=>x.id!==id);saveDB()}
+function exportCSV(type){let arr=type==='rekapSheet'?getSheetSummary():db[type];if(!arr.length){alert('Belum ada data untuk diekspor.');return}let cols=[...new Set(arr.flatMap(x=>Object.keys(x)))];let csv=[cols.join(';'),...arr.map(x=>cols.map(k=>'"'+String(x[k]??'').replace(/"/g,'""')+'"').join(';'))].join('\r\n');download('\ufeff'+csv,`stamping_${type}_${today()}.csv`,'text/csv;charset=utf-8;')}
+function exportBackup(){download(JSON.stringify(db,null,2),`backup_stamping_${today()}.json`,'application/json')}
+function download(content,name,type){let blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)}
+$('restoreFile').addEventListener('change',e=>{let file=e.target.files[0];if(!file)return;let r=new FileReader();r.onload=()=>{try{let data=JSON.parse(r.result);if(!confirm('Import akan mengganti seluruh data saat ini. Lanjutkan?'))return;db={...blank,...data};saveDB();alert('Backup berhasil dipulihkan.')}catch(err){alert('File backup tidak valid.')}};r.readAsText(file);e.target.value=''});
+['searchCetakan','searchFoil','searchPenahan','searchSheet','searchProduksi','filterBulan','searchRekapSheet'].forEach(id=>$(id).addEventListener('input',renderAll));
+$('prTanggal').value=today();$('cTanggal').value=today();$('fTanggal').value=today();renderAll();calcProduction();
+</script>
+</body>
+</html>
